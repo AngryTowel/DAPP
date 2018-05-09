@@ -8,7 +8,7 @@ margin: 0px;
 }
 .bar{width:100%;overflow:hidden;background-color: #333;}
 .bar .bar-item{
-padding:14px 16px;
+padding:10px 16px;
 width:auto;
 border:none;
 outline:none;
@@ -21,11 +21,10 @@ text-decoration: none;}
 
 .hover-ef:hover{
 	color:white;
-	background-color: #8B0000;
 	transition: 0.3s;
 }
 .teal{color: #4dd0e1;}
-.red{color: #8B0000;}
+.red{color: #3e8e41;}
 .left{float: left !important;}
 .right{float: right !important;}
 .top,.bottom{position:fixed;width:100%;z-index:1}.top{top:0}.bottom{text-align: center;bottom:0}
@@ -36,89 +35,57 @@ text-decoration: none;}
 }
 .card {
 	text-align: center;
-	background-color: ;
+	background-color: #333;
 		width:200px;
     /* Add shadows to create the "card" effect */
-    box-shadow: 1px 2px 2px 1px #8B0000;
+    box-shadow: 1px 2px 2px 1px #3e8e41;
     transition: 0.3s;
 		overflow:hidden;
 }
-
 /* On mouse-over, add a deeper shadow */
 .card:hover {
-    box-shadow: 2px 4px 4px 2px #8B0000;
+    box-shadow: 2px 4px 4px 2px #3e8e41;
 }
-
-
-.section {
-	max-height: 300px;
-	max-width: 200px;
-	padding-left: 80px;
-	padding-top: 80px;
+.insertF{
+	padding: 0px;
 }
-
 .insertF input[type=text]{
 	border: none;
-	box-shadow:1px 1px 1px 1px #8B0000;
+	height: 32px;
+	padding: 0px 10px;
+	box-shadow:1px 1px 1px 1px #3e8e41;
 	border-radius: 2px;
 	background-color: none;
 }
 .insertF input[type=text]:hover{
 	outline: none;
-	box-shadow: 2px 2px 2px 2px #8B0000;
+	box-shadow: 2px 2px 2px 2px #3e8e41;
 	transition: 0.3s;
 	overflow:hidden;
 }
 .insertF input[type=text]:focus{
 	outline: none;
-	box-shadow: 2px 2px 2px 2px #8B0000;
+	box-shadow: 2px 2px 2px 2px #3e8e41;
 	transition: 0.3s;
 	overflow:hidden;
 }
-.button{
-	background-color: #8B0000;
-	outline:none;
-	border-radius: 4px;
-  border: none;
-  color: white;
-  padding: 10px 10px;
-  text-decoration: none;
-  display: inline-block;
+.insertF input[type=button]{
+	border: none;
+	height: 32px;
+	background-color: #3e8e41;
+	border-radius: 50%;
+	padding: 0px 10px;
+	border-radius: 2px;
+	border-color: #3e8e41;
+	background-color: none;
 }
-.button:hover{
+.insertF input[type=button]:hover{
 	outline: none;
 	overflow:hidden;
-	box-shadow: 0 3px #666;
 	transition: 0.5s;
 }
-.button:active {
-  background-color: #3e8e41;
-  box-shadow: 0 1px #666;
-  transform: translateY(2px);
-}
-.button span {
-  cursor: pointer;
-  display: inline-block;
-  position: relative;
-  transition: 0.5s;
-}
-
-.button span:after {
-	content: '+';
-	position: absolute;
-	opacity: 0;
-	top: 0;
-	right: -20px;
-	transition: 0.3s;
-}
-
-.button:hover span {
-	padding-right: 25px;
-}
-
-.button:hover span:after {
-	opacity: 1;
-	right: 0;
+.insertF input[type=button]:active {
+  background-color: red;
 }
 
 header{
