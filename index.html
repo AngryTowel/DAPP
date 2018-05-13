@@ -8,6 +8,7 @@
 	<script>
 	  window.addEventListener('load', function() {
 	    owner="0x5ad1f9121fa82637b5db316b8b5a20a35508f94e"
+			contractAddr="0xBf9109575dE48171D704b8Fa9bCc590B9bf44Fb5"
 	    // Checking if Web3 has been injected by the browser (Mist/MetaMask)
 	    if (typeof web3 !== 'undefined') {
 	      // Use Mist/MetaMask's provider
@@ -77,6 +78,7 @@
 		  	"type": "event"
 		  }
 	    ]
+			const contractInstance = web3js.eth.contract(storeABI).at(contractAddr);
 	    setTimeout(function(){
 	      if(web3js.eth.accounts[0] != owner){
 	        document.getElementById("admin").outerHTML="";
@@ -90,10 +92,82 @@
 		<div class="bar">
 			<a href="#" class="bar-item lime">DAPP</a>
 			<form id="admin" class="bar-item">
-				<input type="text" name="item" placeholder="Title" size="20" maxlength="50"/>
-				<input type="text" name="price" placeholder="Price (in Gwei)" size="10" maxlength="20"/>
-				<input type="text" name="qtty" placeholder="Stock" size="10" maxlength="20"/>
-				<input type="button" name="button" value="Add Item +">
+				<input id="ititle" type="text" name="item" placeholder="Title" size="20" maxlength="50"/>
+				<input id="iprice" type="text" name="price" placeholder="Price (in Gwei)" size="10" maxlength="20"/>
+				<input id="iqty" type="text" name="qty" placeholder="Stock" size="10" maxlength="20"/>
+				<input type="button" onclick="addItem()" name="button" value="Add Item +">
+				<script>
+					function addItem(){
+						var title = document.getElementById("ititle").value;
+						var price = document.getElementById("iprice").value;
+						var stock = document.getElementById("iqty").value;
+						var storeABI = [
+					  {
+					  	"constant": false,
+					  	"inputs": [],
+					  	"name": "closeStore",
+					  	"outputs": [],
+					  	"payable": false,
+					  	"stateMutability": "nonpayable",
+					  	"type": "function"
+					  },
+					  {
+					  	"constant": false,
+					  	"inputs": [
+					  		{"name": "item_id","type": "uint256"},
+					  		{"name": "quantity","type": "uint256"}
+					  	],
+					  	"name": "orderItem",
+					  	"outputs": [],
+					  	"payable": true,
+					  	"stateMutability": "payable",
+					  	"type": "function"
+					  },
+					  {
+					  	"constant": false,
+					  	"inputs": [
+					  		{"name": "title","type": "string"},
+					  		{"name": "price","type": "uint256"},
+					  		{"name": "stock","type": "uint256"}
+					  	],
+					  	"name": "addItem",
+					  	"outputs": [],
+					  	"payable": false,
+					  	"stateMutability": "nonpayable",
+					  	"type": "function"
+					  },
+					  {
+					  	"inputs": [],
+					  	"payable": false,
+					  	"stateMutability": "nonpayable",
+					  	"type": "constructor"
+					  },
+					  {
+					  	"anonymous": false,
+					  	"inputs": [
+					  		{"indexed": false,"name": "item_id","type": "uint256"},
+				        {"indexed": false,"name": "title","type": "string"},
+					  		{"indexed": false,"name": "price","type": "uint256"},
+					  		{"indexed": false,"name": "stock","type": "uint256"}
+					  	],
+					  	"name": "item",
+					  	"type": "event"
+					  },
+					  {
+				      "anonymous": false,
+				      "inputs": [
+				        {"indexed": false,"name": "item_id","type": "uint256"},
+				        {"indexed": false,"name": "quantity","type": "uint256"}
+				      ],
+					  	"name": "order",
+					  	"type": "event"
+					  }
+				    ]
+						const contractInstance = web3js.eth.contract(storeABI).at(contractAddr);
+						contractInstance.addItem(title,price,stock,{ from: web3js.eth.accounts[0], value: 0, gas: 1000000 },
+  						(err, res) => { if (!err) alert("Item added");});
+					}
+				</script>
 			</form>
 
 		</div>
