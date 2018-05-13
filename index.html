@@ -5,30 +5,145 @@
 	<title>DAPP</title>
 	<link href="https://fonts.googleapis.com/css?family=Roboto">
 	<link rel="stylesheet" href="style.css">
-
+	<script>
+	  window.addEventListener('load', function() {
+	    owner="0x5ad1f9121fa82637b5db316b8b5a20a35508f94e"
+	    // Checking if Web3 has been injected by the browser (Mist/MetaMask)
+	    if (typeof web3 !== 'undefined') {
+	      // Use Mist/MetaMask's provider
+	      web3js = new Web3(web3.currentProvider);
+	    } else {
+	      console.log('No web3? You should consider trying MetaMask!');
+	    }
+	    var storeABI = [
+		  {
+		  	"constant": false,
+		  	"inputs": [],
+		  	"name": "closeStore",
+		  	"outputs": [],
+		  	"payable": false,
+		  	"stateMutability": "nonpayable",
+		  	"type": "function"
+		  },
+		  {
+		  	"constant": false,
+		  	"inputs": [
+		  		{"name": "item_id","type": "uint256"},
+		  		{"name": "quantity","type": "uint256"}
+		  	],
+		  	"name": "orderItem",
+		  	"outputs": [],
+		  	"payable": true,
+		  	"stateMutability": "payable",
+		  	"type": "function"
+		  },
+		  {
+		  	"constant": false,
+		  	"inputs": [
+		  		{"name": "title","type": "string"},
+		  		{"name": "price","type": "uint256"},
+		  		{"name": "stock","type": "uint256"}
+		  	],
+		  	"name": "addItem",
+		  	"outputs": [],
+		  	"payable": false,
+		  	"stateMutability": "nonpayable",
+		  	"type": "function"
+		  },
+		  {
+		  	"inputs": [],
+		  	"payable": false,
+		  	"stateMutability": "nonpayable",
+		  	"type": "constructor"
+		  },
+		  {
+		  	"anonymous": false,
+		  	"inputs": [
+		  		{"indexed": false,"name": "item_id","type": "uint256"},
+	        {"indexed": false,"name": "title","type": "string"},
+		  		{"indexed": false,"name": "price","type": "uint256"},
+		  		{"indexed": false,"name": "stock","type": "uint256"}
+		  	],
+		  	"name": "item",
+		  	"type": "event"
+		  },
+		  {
+	      "anonymous": false,
+	      "inputs": [
+	        {"indexed": false,"name": "item_id","type": "uint256"},
+	        {"indexed": false,"name": "quantity","type": "uint256"}
+	      ],
+		  	"name": "order",
+		  	"type": "event"
+		  }
+	    ]
+	    setTimeout(function(){
+	      if(web3js.eth.accounts[0] != owner){
+	        document.getElementById("admin").outerHTML="";
+	    }},200);
+	  })
+	</script>
 </head>
 <body>
 	<!-- Top Bar -->
 	<div class="top">
 		<div class="bar">
-			<a href="#" class="bar-item hover-ef cleanlink red">DAPP</a>
-			<form class="insertF bar-item">
-				<input type="text" name="item" size="20" maxlength="50"/>
-				<input type="text" name="price" size="3" maxlength="20"/>
-				<input type="text" name="qtty" size="3" maxlength="20"/>
+			<a href="#" class="bar-item hover-ef cleanlink lime">DAPP</a>
+			<form id="adminn" class="bar-item">
+				<input type="text" name="item" placeholder="Title" size="20" maxlength="50"/>
+				<input type="text" name="price" placeholder="Price (in Gwei)" size="10" maxlength="20"/>
+				<input type="text" name="qtty" placeholder="Stock" size="10" maxlength="20"/>
 				<input type="button" name="button" value="Add Item +">
 			</form>
 
 		</div>
 	</div>
-<div class="txt hover-ef red card">
-<h2>About Us</h2>
-
+<div class="block">
+	<div class="lime card">
+		<h2>Item 1</h2>
+		<p>Price: 0.01 ETH</p>
+		<div class="slide">
+			<input type="text" name="qty" placeholder="Quantity" size="3" maxlength="4"/>
+			<input type="button" value="BUY"/>
+		</div>
+	</div>
+	<div class="lime card">
+		<h2>Item 2</h2>
+		<p>Price: 0.02 ETH</p>
+		<div class="slide">
+			<input type="text" name="qty" placeholder="Quantity" size="3" maxlength="4"/>
+			<input type="button" value="BUY"/>
+		</div>
+	</div>
+	<div class="lime card">
+		<h2>Item 3</h2>
+		<p>Price: 0.02 ETH</p>
+		<div class="slide">
+			<input type="text" name="qty" placeholder="Quantity" size="3" maxlength="4"/>
+			<input type="button" value="BUY"/>
+		</div>
+	</div>
+	<div class="lime card">
+		<h2>Item 4</h2>
+		<p>Price:</p>
+		<div class="slide">
+			<input type="text" name="qty" placeholder="Quantity" size="3" maxlength="4"/>
+			<input type="button" value="BUY"/>
+		</div>
+	</div>
+	<div class="lime card">
+		<h2>Item 5</h2>
+		<p>Price:</p>
+		<div class="slide">
+			<input type="text" name="qty" placeholder="Quantity" size="3" maxlength="4"/>
+			<input type="button" value="BUY"/>
+		</div>
+	</div>
 </div>
 </div>
 	<div class="bottom">
 		<div class="bar">
-			<a class="bar-item cleanlink teal">&copy; Marjan and Emel DAPP All rights reserved.</a>
+			<a class="bar-item left lime">&copy; Marjan and Emel DAPP All rights reserved.</a>
 		</div>
 	</div>
 </body>
