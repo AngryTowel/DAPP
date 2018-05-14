@@ -109,7 +109,10 @@
 					inner = "";
 					for(id in inventory){
 						item = inventory[id];
-						inner+='<div class="lime card">'
+						if(item.stock==0){
+							continue;
+						}
+						inner+='<div class="card lime">'
 						inner+='<h2>'+item.title+'</h2>'
 						inner+='<p>Price: '+web3js.fromWei(item.price,'finney')+' finney</p>'
 						inner+='<div class="slide">'
@@ -118,8 +121,7 @@
 					}
 					document.getElementById("main").innerHTML = inner;
 				}
-
-			},200);
+			},300);
 	  })
 		function uintToStr(u){
 			return (u.c[0] + '0'.repeat(u.e+1)).substring(0, u.e+1);
@@ -135,6 +137,15 @@
 			contractInstance.orderItem(id,qty,{from:web3js.eth.accounts[0], value: toPay, gas: 100000},
 			(err,res) => { if (!err) alert("Item Ordered");});
 		}
+		function addItem(){
+			var title = document.getElementById("ititle").value;
+			var price = document.getElementById("iprice").value;
+			var stock = document.getElementById("iqty").value;
+			price = web3js.toWei(price, 'gwei');
+			const contractInstance = web3js.eth.contract(storeABI).at(contractAddr);
+			contractInstance.addItem(title,price,stock,{ from: web3js.eth.accounts[0], value: 0, gas: 1000000 },
+				(err, res) => { if (!err) alert("Item added");});
+		}
 	</script>
 </head>
 <body>
@@ -147,17 +158,6 @@
 				<input id="iprice" type="text" name="price" placeholder="Price (in Gwei)" size="10" maxlength="20"/>
 				<input id="iqty" type="text" name="qty" placeholder="Stock" size="10" maxlength="20"/>
 				<input type="button" onclick="addItem()" name="button" value="Add Item +">
-				<script>
-					function addItem(){
-						var title = document.getElementById("ititle").value;
-						var price = document.getElementById("iprice").value;
-						var stock = document.getElementById("iqty").value;
-						price = web3js.toWei(price, 'gwei');
-						const contractInstance = web3js.eth.contract(storeABI).at(contractAddr);
-						contractInstance.addItem(title,price,stock,{ from: web3js.eth.accounts[0], value: 0, gas: 1000000 },
-  						(err, res) => { if (!err) alert("Item added");});
-					}
-				</script>
 			</form>
 		</div>
 	</div>
