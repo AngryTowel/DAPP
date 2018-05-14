@@ -6,9 +6,73 @@
 	<link href="https://fonts.googleapis.com/css?family=Roboto">
 	<link rel="stylesheet" href="style.css">
 	<script>
+	var inventory = {};
+	var owner="0x5ad1f9121fa82637b5db316b8b5a20a35508f94e"
+	var contractAddr="0xBf9109575dE48171D704b8Fa9bCc590B9bf44Fb5"
+	var firstBlock=3226734;
+	var storeABI = [
+		{
+			"constant": false,
+			"inputs": [],
+			"name": "closeStore",
+			"outputs": [],
+			"payable": false,
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"constant": false,
+			"inputs": [
+				{"name": "item_id","type": "uint256"},
+				{"name": "quantity","type": "uint256"}
+			],
+			"name": "orderItem",
+			"outputs": [],
+			"payable": true,
+			"stateMutability": "payable",
+			"type": "function"
+		},
+		{
+			"constant": false,
+			"inputs": [
+				{"name": "title","type": "string"},
+				{"name": "price","type": "uint256"},
+				{"name": "stock","type": "uint256"}
+			],
+			"name": "addItem",
+			"outputs": [],
+			"payable": false,
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [],
+			"payable": false,
+			"stateMutability": "nonpayable",
+			"type": "constructor"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{"indexed": false,"name": "item_id","type": "uint256"},
+				{"indexed": false,"name": "title","type": "string"},
+				{"indexed": false,"name": "price","type": "uint256"},
+				{"indexed": false,"name": "stock","type": "uint256"}
+			],
+			"name": "item",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{"indexed": false,"name": "item_id","type": "uint256"},
+				{"indexed": false,"name": "quantity","type": "uint256"}
+			],
+			"name": "order",
+			"type": "event"
+		}
+		]
 	  window.addEventListener('load', function() {
-	    owner="0x5ad1f9121fa82637b5db316b8b5a20a35508f94e"
-			contractAddr="0xBf9109575dE48171D704b8Fa9bCc590B9bf44Fb5"
 	    // Checking if Web3 has been injected by the browser (Mist/MetaMask)
 	    if (typeof web3 !== 'undefined') {
 	      // Use Mist/MetaMask's provider
@@ -16,74 +80,61 @@
 	    } else {
 	      console.log('No web3? You should consider trying MetaMask!');
 	    }
-	    var storeABI = [
-		  {
-		  	"constant": false,
-		  	"inputs": [],
-		  	"name": "closeStore",
-		  	"outputs": [],
-		  	"payable": false,
-		  	"stateMutability": "nonpayable",
-		  	"type": "function"
-		  },
-		  {
-		  	"constant": false,
-		  	"inputs": [
-		  		{"name": "item_id","type": "uint256"},
-		  		{"name": "quantity","type": "uint256"}
-		  	],
-		  	"name": "orderItem",
-		  	"outputs": [],
-		  	"payable": true,
-		  	"stateMutability": "payable",
-		  	"type": "function"
-		  },
-		  {
-		  	"constant": false,
-		  	"inputs": [
-		  		{"name": "title","type": "string"},
-		  		{"name": "price","type": "uint256"},
-		  		{"name": "stock","type": "uint256"}
-		  	],
-		  	"name": "addItem",
-		  	"outputs": [],
-		  	"payable": false,
-		  	"stateMutability": "nonpayable",
-		  	"type": "function"
-		  },
-		  {
-		  	"inputs": [],
-		  	"payable": false,
-		  	"stateMutability": "nonpayable",
-		  	"type": "constructor"
-		  },
-		  {
-		  	"anonymous": false,
-		  	"inputs": [
-		  		{"indexed": false,"name": "item_id","type": "uint256"},
-	        {"indexed": false,"name": "title","type": "string"},
-		  		{"indexed": false,"name": "price","type": "uint256"},
-		  		{"indexed": false,"name": "stock","type": "uint256"}
-		  	],
-		  	"name": "item",
-		  	"type": "event"
-		  },
-		  {
-	      "anonymous": false,
-	      "inputs": [
-	        {"indexed": false,"name": "item_id","type": "uint256"},
-	        {"indexed": false,"name": "quantity","type": "uint256"}
-	      ],
-		  	"name": "order",
-		  	"type": "event"
-		  }
-	    ]
-			const contractInstance = web3js.eth.contract(storeABI).at(contractAddr);
 	    setTimeout(function(){
 	      if(web3js.eth.accounts[0] != owner){
 	        document.getElementById("admin").outerHTML="";
-	    }},200);
+				}
+				const contractInstance = web3js.eth.contract(storeABI).at(contractAddr);
+				contractInstance.item({},{fromBlock: firstBlock, toBlock: 'latest'}).get(
+				function(err,data){
+					for(i in data){
+						eventArgs = data[i].args;
+						var id = uintToStr(eventArgs.item_id);
+						var title = eventArgs.title;
+						var price = uintToStr(eventArgs.price);
+						var stock = uintToStr(eventArgs.stock);
+						inventory[id]={title:title,price:price,stock:stock};
+					}
+				});
+				contractInstance.order({},{fromBlock: firstBlock, toBlock: 'latest'}).get(function(err,data){
+					for(i in data){
+						eventArgs = data[i].args;
+						var id = uintToStr(eventArgs.item_id);
+						var qty = uintToStr(eventArgs.quantity);
+						inventory[id].stock-=qty;
+					}
+					updateCards();
+				});
+				function updateCards(){
+					inner = "";
+					for(id in inventory){
+						item = inventory[id];
+						inner+='<div class="lime card">'
+						inner+='<h2>'+item.title+'</h2>'
+						inner+='<p>Price: '+web3js.fromWei(item.price,'finney')+' finney</p>'
+						inner+='<div class="slide">'
+						inner+='<input id="item'+id+'" type="text" name="qty" placeholder="Quantity" size="3" max='+item.stock+' maxlength="4"/>'
+						inner+='<input type="button" onclick="buyItem(\''+id+'\')" value="BUY"/></div></div>'
+					}
+					document.getElementById("main").innerHTML = inner;
+				}
+
+			},200);
 	  })
+		function uintToStr(u){
+			return (u.c[0] + '0'.repeat(u.e+1)).substring(0, u.e+1);
+		}
+		function buyItem(id){
+			var qty = document.getElementById('item'+id).value;
+			if (inventory[id].qty<qty){
+				alert("Not enough items in stock");
+				return;
+			}
+			var toPay = inventory[id].price*qty;
+			const contractInstance = web3js.eth.contract(storeABI).at(contractAddr);
+			contractInstance.orderItem(id,qty,{from:web3js.eth.accounts[0], value: toPay, gas: 100000},
+			(err,res) => { if (!err) alert("Item Ordered");});
+		}
 	</script>
 </head>
 <body>
@@ -101,124 +152,16 @@
 						var title = document.getElementById("ititle").value;
 						var price = document.getElementById("iprice").value;
 						var stock = document.getElementById("iqty").value;
-						var storeABI = [
-					  {
-					  	"constant": false,
-					  	"inputs": [],
-					  	"name": "closeStore",
-					  	"outputs": [],
-					  	"payable": false,
-					  	"stateMutability": "nonpayable",
-					  	"type": "function"
-					  },
-					  {
-					  	"constant": false,
-					  	"inputs": [
-					  		{"name": "item_id","type": "uint256"},
-					  		{"name": "quantity","type": "uint256"}
-					  	],
-					  	"name": "orderItem",
-					  	"outputs": [],
-					  	"payable": true,
-					  	"stateMutability": "payable",
-					  	"type": "function"
-					  },
-					  {
-					  	"constant": false,
-					  	"inputs": [
-					  		{"name": "title","type": "string"},
-					  		{"name": "price","type": "uint256"},
-					  		{"name": "stock","type": "uint256"}
-					  	],
-					  	"name": "addItem",
-					  	"outputs": [],
-					  	"payable": false,
-					  	"stateMutability": "nonpayable",
-					  	"type": "function"
-					  },
-					  {
-					  	"inputs": [],
-					  	"payable": false,
-					  	"stateMutability": "nonpayable",
-					  	"type": "constructor"
-					  },
-					  {
-					  	"anonymous": false,
-					  	"inputs": [
-					  		{"indexed": false,"name": "item_id","type": "uint256"},
-				        {"indexed": false,"name": "title","type": "string"},
-					  		{"indexed": false,"name": "price","type": "uint256"},
-					  		{"indexed": false,"name": "stock","type": "uint256"}
-					  	],
-					  	"name": "item",
-					  	"type": "event"
-					  },
-					  {
-				      "anonymous": false,
-				      "inputs": [
-				        {"indexed": false,"name": "item_id","type": "uint256"},
-				        {"indexed": false,"name": "quantity","type": "uint256"}
-				      ],
-					  	"name": "order",
-					  	"type": "event"
-					  }
-				    ]
+						price = web3js.toWei(price, 'gwei');
 						const contractInstance = web3js.eth.contract(storeABI).at(contractAddr);
 						contractInstance.addItem(title,price,stock,{ from: web3js.eth.accounts[0], value: 0, gas: 1000000 },
   						(err, res) => { if (!err) alert("Item added");});
 					}
 				</script>
 			</form>
-
 		</div>
 	</div>
-<div class="block">
-	<div class="lime card">
-		<h2>Item 1</h2>
-		<p>Price: 0.01 ETH</p>
-		<div class="slide">
-			<input type="text" name="qty" placeholder="Quantity" size="3" maxlength="4"/>
-			<input type="button" value="BUY"/>
-		</div>
-	</div>
-	<div class="lime card">
-		<h2>Item 2</h2>
-		<p>Price: 0.02 ETH</p>
-		<div class="slide">
-			<input type="text" name="qty" placeholder="Quantity" size="3" maxlength="4"/>
-			<input type="button" value="BUY"/>
-		</div>
-	</div>
-	<div class="lime card">
-		<h2>Item 3</h2>
-		<p>Price: 0.02 ETH</p>
-		<div class="slide">
-			<input type="text" name="qty" placeholder="Quantity" size="3" maxlength="4"/>
-			<input type="button" value="BUY"/>
-		</div>
-	</div>
-	<div class="lime card">
-		<h2>Item 4</h2>
-		<p>Price:</p>
-		<div class="slide">
-			<input type="text" name="qty" placeholder="Quantity" size="3" maxlength="4"/>
-			<input type="button" value="BUY"/>
-		</div>
-	</div>
-	<div class="lime card">
-		<h2>Item 5</h2>
-		<p>Price:</p>
-		<div class="slide">
-			<input type="text" name="qty" placeholder="Quantity" size="3" maxlength="4"/>
-			<input type="button" value="BUY"/>
-		</div>
-	</div>
-</div>
-</div>
-	<div class="bottom">
-		<div class="bar">
-			<a class="bar-item left lime">&copy; Marjan and Emel DAPP All rights reserved.</a>
-		</div>
+	<div id="main" class="block">
 	</div>
 </body>
 </html>
